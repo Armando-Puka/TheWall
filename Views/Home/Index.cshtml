@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model Comment
+
+@await Html.PartialAsync("_Navbar")
+
+@await Html.PartialAsync("_Message")
+
+<div class="row justify-content-center">
+    @foreach (Message message in ViewBag.AllMessages) {
+        <div class="col-9 mt-3">
+            <div>
+                <div class="d-flex gap-20 align-items-center">
+                    <p class="font-bold">@message.Commenter?.Name @message.Commenter?.LastName - @message.CreatedAt.ToString("MMMMMMMM dd, yyy - h:mm tt")</p>
+                    @{
+                        @if (ViewBag.userId == message.UserId) {
+                            <a asp-action="DeletePost" class="text-danger" asp-route-id="@message.MessageId">Delete Post</a>
+                        }
+                    }
+                </div>
+                <p class="p-2">@message.MessageText</p>
+            </div>
+
+            @foreach (Comment comment in message.AllComments) {
+                <div class="p-3">
+                    <div class="d-flex gap-20 align-items-center">
+                        <p class="font-bold">@comment.UserCommenter?.Name @comment.UserCommenter?.LastName - @comment.CreatedAt.ToString("MMMMMMMM dd, yyy - h:mm tt")</p>
+                        @{
+                            @if (ViewBag.userId == comment.UserId) {
+                                <a asp-action="DeleteComment" class="text-danger" asp-route-id="@comment.CommentId">Delete Comment</a>
+                            }
+                        }
+                    </div>
+                    <p>@comment.CommentText</p>
+                </div>
+            }
+
+            <div class="p-3">
+                <form asp-action="PostComment" asp-route-id="@message.MessageId" method="post">
+                    <div class="form-group">
+                        <h4>Post a Comment</h4>
+                        <textarea asp-for="CommentText" class="form-control mt-2 border border-dark" id="MyMessage" rows="2"></textarea>
+                        <span class="d-flex justify-content-end">
+                            <span asp-validation-for="CommentText" class="text-danger"></span>
+                        </span>
+                    </div>
+                    <span class="d-flex justify-content-end">
+                        <input type="submit" class="btn comment-button shadow border border-dark border-2 font-bold mt-2" value="Comment">
+                    </span>
+                </form>
+            </div>
+        </div>
+    }
+</div>
